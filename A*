@@ -1,0 +1,104 @@
+import heapq
+
+WALL = '#'
+START_CHAR = 'S'
+GOAL_CHAR = 'G'
+PATH_CHAR = '*'
+
+def heuristic(a, b):
+    return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+def reconstruct_path(came_from, current):
+    path = []
+    while current is not None:
+        path.append(current)
+        current = came_from.get(current)
+    return path[::-1]
+
+def a_star_search(grid, start, goal):
+    rows = len(grid)
+    cols = len(grid[0])
+    
+    pq = [(0 + heuristic(start, goal), 0, start)]
+    
+    g_scores = {start: 0}
+    
+    came_from = {start: None}
+    
+    movements = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+
+    while pq:
+        f_score, current_g, current_pos = heapq.heappop(pq)
+        
+        if current_pos == goal:
+            return reconstruct_path(came_from, current_pos)
+
+        if current_g > g_scores.get(current_pos, float('inf')):
+             continue
+        
+        for move in movements:
+            next_pos = (current_pos[0] + move[0], current_pos[1] + move[1])
+            
+            if 0 <= next_pos[0] < rows and 0 <= next_pos[1] < cols and grid[next_pos[0]][next_pos[1]] != WALL:
+                
+                new_g_score = current_g + 1
+                
+                if new_g_score < g_scores.get(next_pos, float('inf')):
+                    g_scores[next_pos] = new_g_score
+                    came_from[next_pos] = current_pos
+                    
+                    h_score = heuristic(next_pos, goal)
+                    f_score = new_g_score + h_score
+                    
+                    heapq.heappush(pq, (f_score, new_g_score, next_pos))
+    
+    return None
+
+def print_grid_path(grid_map, path):
+    output_grid = [list(row) for row in grid_map]
+    
+    for r, c in path:
+        if output_grid[r][c] not in (START_CHAR, GOAL_CHAR):
+            output_grid[r][c] = PATH_CHAR
+            
+    print("\nVisualized Path ( '*' ):")
+    for row in output_grid:
+        print(" ".join(row))
+
+GRID_MAP = [
+    ['.', '.', '.', '.', '.', '.'],
+    ['.', WALL, WALL, WALL, '.', '.'],
+    [START_CHAR, '.', '.', '.', '.', '.'],
+    ['.', WALL, '.', WALL, WALL, '.'],
+    ['.', '.', '.', '.', '.', GOAL_CHAR]
+]
+
+START = None
+GOAL = None
+for r in range(len(GRID_MAP)):
+    for c in range(len(GRID_MAP[0])):
+        if GRID_MAP[r][c] == START_CHAR:
+            START = (r, c)
+        elif GRID_MAP[r][c] == GOAL_CHAR:
+            GOAL = (r, c)
+
+if not START or not GOAL:
+    print("Error: Start (S) or Goal (G) not found in the grid map.")
+else:
+    print("--- Starting A* Search with Correct Path Tracing ---")
+    print(f"Start Position: {START}")
+    print(f"Goal Position: {GOAL}")
+        
+    path = a_star_search(GRID_MAP, START, GOAL)
+        
+    print("\n--- Simulation Results ---")
+    if path is None:
+        print("Path NOT found from Start to Goal.")
+    else:
+        cost = len(path) - 1 
+        
+        print(f"Path FOUND from Start to Goal!")
+        print(f"Minimum Cost (g_score): {cost}")
+        print(f"Shortest Path Coordinates: {path}")
+        
+        print_grid_path(GRID_MAP, path)
