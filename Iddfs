@@ -1,0 +1,56 @@
+def dls(g, start, goal, limit):
+    stack = [{"n": start, "p": [start], "d": 0}]
+    
+    while stack:
+        s = stack.pop()
+        node = s["n"]
+        path = s["p"]
+        d = s["d"]
+
+        if node == goal:
+            return path, True
+
+        if d < limit:
+            for nxt in g.get(node, []):
+                stack.append({
+                    "n": nxt,
+                    "p": path + [nxt],
+                    "d": d + 1
+                })
+
+    return None, False
+
+
+def iddfs(g, start, goal, max_d):
+    for lim in range(max_d + 1):
+        print(f"Current Iteration Limit: {lim}")
+        p, f = dls(g, start, goal, lim)
+        if f:
+            return p, True, lim
+    return None, False, max_d
+
+
+if __name__ == "__main__":
+    graph = {
+        'A': ['B', 'C'],
+        'B': ['D', 'E'],
+        'C': ['F'],
+        'D': [],
+        'E': ['F'],
+        'F': ['G'],
+        'G': []
+    }
+
+    start = 'A'
+    goal = 'G'
+    max_depth = 5
+
+    print("IDDFS Simulation:")
+    path, found, depth = iddfs(graph, start, goal, max_depth)
+
+    print("\nIDDFS Final Results:")
+    if found:
+        print("Path Found:", path)
+        print("Goal Found at Limit:", depth)
+    else:
+        print("Goal node not reachable within the maximum depth.")
