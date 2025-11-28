@@ -1,0 +1,53 @@
+import math
+
+def minimax(d, idx, is_max, s, h):
+    if d == h:
+        return s[idx]
+
+    if is_max:
+        best = -math.inf
+        for i in range(2):
+            val = minimax(d + 1, idx * 2 + i, False, s, h)
+            best = max(best, val)
+        return best
+    else:
+        best = math.inf
+        for i in range(2):
+            val = minimax(d + 1, idx * 2 + i, True, s, h)
+            best = min(best, val)
+        return best
+
+
+def minimax_ab(d, idx, is_max, s, h, a, b):
+    if d == h:
+        return s[idx]
+
+    if is_max:
+        best = -math.inf
+        for i in range(2):
+            val = minimax_ab(d + 1, idx * 2 + i, False, s, h, a, b)
+            best = max(best, val)
+            a = max(a, best)
+            if b <= a:
+                break
+        return best
+    else:
+        best = math.inf
+        for i in range(2):
+            val = minimax_ab(d + 1, idx * 2 + i, True, s, h, a, b)
+            best = min(best, val)
+            b = min(b, best)
+            if b <= a:
+                break
+        return best
+
+
+if __name__ == "__main__":
+    scores = [3, 5, 2, 9, 12, 5, 23, 23]
+    h = 3
+
+    print("--- MiniMax ---")
+    print("Optimal val:", minimax(0, 0, True, scores, h))
+
+    print("\n--- Alpha-Beta Pruning ---")
+    print("Optimal val:", minimax_ab(0, 0, True, scores, h, -math.inf, math.inf))
