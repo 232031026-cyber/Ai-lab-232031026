@@ -1,0 +1,67 @@
+import heapq
+
+def gbfs(graph, h, start, goal):
+    open_list = [(h[start], start)]
+    open_set = {start}
+    came = {start: None}
+    visited = set()
+
+    while open_list:
+        _, node = heapq.heappop(open_list)
+        open_set.discard(node)
+
+        if node == goal:
+            return path(came, start, goal)
+
+        if node in visited:
+            continue
+        visited.add(node)
+
+        for n in graph.get(node, []):
+            if n not in visited and n not in open_set:
+                came[n] = node
+                heapq.heappush(open_list, (h.get(n, float('inf')), n))
+                open_set.add(n)
+
+    return None
+
+
+def path(came, start, goal):
+    p = []
+    cur = goal
+    while cur is not None:
+        p.append(cur)
+        cur = came.get(cur)
+    return p[::-1]
+
+
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F'],
+    'D': ['G'],
+    'E': ['H', 'I'],
+    'F': ['J'],
+    'G': [],
+    'H': ['K'],
+    'I': ['L'],
+    'J': [],
+    'K': ['G'],
+    'L': []
+}
+
+heur = {
+    'A': 8, 'B': 5, 'C': 7, 'D': 3, 'E': 4, 'F': 6, 'G': 0,
+    'H': 1, 'I': 2, 'J': 10, 'K': 1, 'L': 12
+}
+
+start = 'A'
+goal = 'G'
+
+result = gbfs(graph, heur, start, goal)
+
+print("Start Node:", start)
+print("Goal Node:", goal)
+print("Path Found:" if result else "No path found.")
+if result:
+    print(" -> ".join(result))
