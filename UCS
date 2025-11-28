@@ -1,0 +1,50 @@
+import heapq
+
+def ucs(g, s, t):
+    pq = [(0, s, [s])]
+    cost = {s: 0}
+
+    while pq:
+        c, n, p = heapq.heappop(pq)
+
+        if n == t:
+            return c, p
+
+        for nxt, w in g.get(n, []):
+            nc = c + w
+            if nxt not in cost or nc < cost[nxt]:
+                cost[nxt] = nc
+                heapq.heappush(pq, (nc, nxt, p + [nxt]))
+
+    return float("inf"), []
+
+
+def simulate(g, s, t):
+    c, p = ucs(g, s, t)
+    print("--- Simulation of Uniform Cost Search (UCS) ---")
+    print("Start Node:", s)
+    print("Goal Node:", t)
+
+    if p:
+        print("Found Goal:", t)
+        print("Optimal Path:", " -> ".join(p))
+        print("Minimum Cost:", c)
+    else:
+        print("Goal", t, "is not reachable from", s)
+        print("Minimum Cost:", c)
+
+
+graph = {
+    'A': [('B', 1), ('C', 5)],
+    'B': [('D', 3), ('E', 6)],
+    'C': [('E', 2)],
+    'D': [('F', 2)],
+    'E': [('D', 1), ('F', 7)],
+    'F': []
+}
+
+simulate(graph, 'A', 'F')
+print("-" * 50)
+simulate(graph, 'A', 'D')
+print("-" * 50)
+simulate(graph, 'B', 'C')
