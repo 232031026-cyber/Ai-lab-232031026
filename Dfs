@@ -1,0 +1,51 @@
+def dfs_recursive(graph, current_node, goal_node, visited, path):
+    visited.add(current_node)
+    
+    if current_node == goal_node:
+        return path
+    
+    for neighbor in graph.get(current_node, []):
+        if neighbor not in visited:
+            result_path = dfs_recursive(
+                graph, 
+                neighbor, 
+                goal_node, 
+                visited, 
+                path + [neighbor]
+            )
+            
+            if result_path is not None:
+                return result_path
+                
+    return None
+
+def find_dfs_path_recursive(graph, start_node, goal_node):
+    visited = set()
+    initial_path = [start_node]
+    
+    final_path = dfs_recursive(graph, start_node, goal_node, visited, initial_path)
+    
+    return final_path, visited
+
+if __name__ == "__main__":
+    graph = {
+        'A': ['B', 'C'],
+        'B': ['D', 'E'],
+        'C': ['F'],
+        'D': [],
+        'E': ['F'],
+        'F': ['G'],
+        'G': []
+    }
+
+    start_node = 'A'
+    goal_node = 'G'
+
+    final_path, visited_set = find_dfs_path_recursive(graph, start_node, goal_node)
+
+    print("DFS Recursive Simulation Results (No Comments):")
+    if final_path:
+        print(f"Path Found: {final_path}")
+        print(f"Nodes Visited: {len(visited_set)}")
+    else:
+        print("Goal node not reachable.")
