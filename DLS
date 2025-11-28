@@ -1,0 +1,42 @@
+def dls(graph, start, goal, limit):
+    stack = [{"node": start, "path": [start], "depth": 0}]
+    
+    while stack:
+        state = stack.pop()
+        node = state["node"]
+        path = state["path"]
+        depth = state["depth"]
+
+        if node == goal:
+            return path, True
+
+        if depth < limit:
+            children = graph.get(node, [])
+            for child in children:
+                stack.append({
+                    "node": child,
+                    "path": path + [child],
+                    "depth": depth + 1
+                })
+
+    return None, False
+
+
+if __name__ == "__main__":
+    graph = {
+        'A': ['B', 'C'],
+        'B': ['D', 'E'],
+        'C': ['F'],
+        'D': [],
+        'E': ['F'],
+        'F': ['G'],
+        'G': []
+    }
+
+    print("DLS (Limit = 3)")
+    p, f = dls(graph, "A", "G", 3)
+    print("Path:", p if f else "Not found")
+
+    print("\nDLS (Limit = 4)")
+    p2, f2 = dls(graph, "A", "G", 4)
+    print("Path:", p2 if f2 else "Not found")
