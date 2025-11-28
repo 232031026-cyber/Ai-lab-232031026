@@ -1,0 +1,43 @@
+def f(x):
+    return -(x - 3)**2 + 10
+
+def nbrs(x, s=0.1):
+    return [x + s, x - s]
+
+def hill(f, x0, s=0.1, it=100):
+    x = x0
+    v = f(x)
+    print(f"--- Starting Hill Climb with Initial X = {x0} ---")
+
+    for i in range(it):
+        n = nbrs(x, s)
+        bx = x
+        bv = v
+
+        for nx in n:
+            nv = f(nx)
+            if nv > bv:
+                bx = nx
+                bv = nv
+
+        if bv > v:
+            x = bx
+            v = bv
+            print(f"Iteration {i+1}: New X = {x:.4f}, f(x) = {v:.4f}")
+        else:
+            print(f"\nConvergence reached at Iteration {i+1}.")
+            break
+
+    return x, v
+
+
+x0 = 0.0
+step = 0.1
+m = 100
+
+fx, fv = hill(f, x0, s=step, it=m)
+
+print("\n--- Simulation Result ---")
+print("Goal: Find max of f(x) = -(x-3)^2 + 10")
+print(f"Final solution X: {fx:.4f}")
+print(f"Final value f(x): {fv:.4f}")
